@@ -26,9 +26,12 @@ A FastMCP Server which allows an LLM to send MIDI sequences into any software th
    cd mcp-server-midi
    ```
 
-2. Install dependencies:
+2. Create a virtual env, activate it and install dependencies:
    ```
-   pip install rtmidi fastmcp python-dotenv
+   python -m venv .venv
+   source .venv/bin/activate
+
+   pip install -r requirements.txt
    ```
 
 3. Create a `.env` file with your configuration:
@@ -41,10 +44,6 @@ A FastMCP Server which allows an LLM to send MIDI sequences into any software th
 Run the server:
 
 ```
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
 python mcp_midi_server.py
 ```
 
