@@ -36,7 +36,7 @@ A FastMCP Server which allows an LLM to send MIDI sequences into any software th
 
 3. Create a `.env` file with your configuration:
    ```
-   PORT=8000
+   PORT=8123
    ```
 
 ## Usage
@@ -54,6 +54,19 @@ The server creates a virtual MIDI port named "MCP MIDI Out" that can be used as 
 - Connect to any other software that accepts MIDI input (virtual instruments, lighting controllers, etc.)
 
 Simply select "MCP MIDI Out" as a MIDI input device in your preferred MIDI-compatible application.
+
+## MCP Config
+
+The server uses Server-Sent Events (SSE), this is how to config it in Cursor:
+```
+{
+  "mcpServers": {
+      "midi": {
+          "url": "http://localhost:8123/sse"
+      }
+   }
+}
+```
 
 ## API Methods
 
