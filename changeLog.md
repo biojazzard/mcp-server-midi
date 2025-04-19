@@ -1,8 +1,16 @@
 # Changelog
 
-## [Unreleased] - 2025-04-19
+## [Released] - 2025-04-19
 
 ### Added
+
+- **`MIDI_bank_select` MCP Tool:** Implemented a new tool in `mcp_midi_server.py`.
+  - **Purpose:** Allows MCP clients to send MIDI Bank Select MSB (CC 0) and LSB (CC 32) messages, typically used before a Program Change.
+  - **Parameters:**
+    - `bank_msb` (int): Bank Select MSB value (0-127).
+    - `bank_lsb` (int): Bank Select LSB value (0-127).
+    - `channel` (int, optional): MIDI channel (0-15). Defaults to 0.
+  - **Functionality:** Sends two Control Change messages (CC 0 for MSB, CC 32 for LSB) using `python-rtmidi`. Includes input validation. Returns success status and messages.
 
 - **`send_program_change` MCP Tool:** Implemented a new tool in `mcp_midi_server.py` named `send_program_change`.
   - **Purpose:** Allows MCP clients to send MIDI Program Change messages.

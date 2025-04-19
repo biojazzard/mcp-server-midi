@@ -166,6 +166,52 @@ async def MIDI_program_change(
     print(msg)
     return {"status": "success", "message": msg}
 
+
+# --- New Tool: Send Bank Select ---
+@mcp.tool()
+async def MIDI_bank_select(
+    bank_msb: int,
+    bank_lsb: int,
+    channel: int = 0
+):
+    """Sends MIDI Bank Select messages (CC 0 and CC 32).
+
+    These messages are typically sent before a Program Change to select
+    the desired sound bank.
+
+    Args:
+        bank_msb: Bank Select MSB value (0-127). Controller 0.
+        bank_lsb: Bank Select LSB value (0-127). Controller 32.
+        channel: MIDI channel (0-15, default 0).
+    """
+    if not 0 <= bank_msb <= 127:
+        raise ValueError("Bank MSB must be between 0 and 127")
+    if not 0 <= bank_lsb <= 127:
+        raise ValueError("Bank LSB must be between 0 and 127")
+    if not 0 <= channel <= 15:
+        raise ValueError("Channel must be between 0 and 15")
+
+    # MIDI CC status byte: 0xB0 | channel
+    status = 0xB0 | channel
+
+    # Send Bank Select MSB (CC 0)
+    message_msb = [status, 0, bank_msb]
+    midiout.send_message(message_msb)
+    msg_msb = f"Sent Bank Select MSB: ch={channel}, cc=0, val={bank_msb}"
+    print(msg_msb)
+
+    # Send Bank Select LSB (CC 32)
+    message_lsb = [status, 32, bank_lsb]
+    midiout.send_message(message_lsb)
+    msg_lsb = f"Sent Bank Select LSB: ch={channel}, cc=32, val={bank_lsb}"
+    print(msg_lsb)
+
+    return {
+        "status": "success",
+        "message": f"{msg_msb}\n{msg_lsb}"
+    }
+
+
 # --- New Tool: Send MIDI Sequence ---
 @mcp.tool()
 async def MIDI_sequence(events: list):
