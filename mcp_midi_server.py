@@ -41,7 +41,6 @@ else:
     print("Please ensure a MIDI interface or virtual MIDI driver (like loopMIDI) is installed and running.")
     exit()
 
-
 # --- MCP Server Setup ---
 mcp = FastMCP(
     name="MCP MIDI Server",
@@ -53,7 +52,6 @@ mcp = FastMCP(
 
 # --- MCP Methods ---
 # We will define methods here to handle MIDI messages
-
 
 # Example: Send Note On
 @mcp.tool()
@@ -84,7 +82,6 @@ async def send_note_on(
     print(msg)
     return {"status": "success", "message": msg}
 
-
 # Example: Send Note Off
 @mcp.tool()
 async def send_note_off(
@@ -113,7 +110,6 @@ async def send_note_off(
     msg = f"Sent Note Off: ch={channel}, note={note}, vel={velocity}"
     print(msg)
     return {"status": "success", "message": msg}
-
 
 # Example: Send Control Change
 @mcp.tool()
@@ -144,6 +140,30 @@ async def send_control_change(
     print(msg)
     return {"status": "success", "message": msg}
 
+# --- New Tool: Send Program Change ---
+@mcp.tool()
+async def send_program_change(
+    program: int,
+    channel: int = 0
+):
+    """Sends a MIDI Program Change message.
+
+    Args:
+        program: Program number (0-127).
+        channel: MIDI channel (0-15, default 0).
+    """
+    if not 0 <= program <= 127:
+        raise ValueError("Program number must be between 0 and 127")
+    if not 0 <= channel <= 15:
+        raise ValueError("Channel must be between 0 and 15")
+
+    # MIDI Program Change status byte: 0xC0 | channel
+    status = 0xC0 | channel
+    message = [status, program]
+    midiout.send_message(message)
+    msg = f"Sent Program Change: ch={channel}, program={program}"
+    print(msg)
+    return {"status": "success", "message": msg}
 
 # --- New Tool: Send MIDI Sequence ---
 @mcp.tool()
@@ -220,7 +240,6 @@ async def send_midi_sequence(events: list):
         "results": results
     }
 
-
 async def play_note_with_timing(
     note, velocity, channel, duration, start_time, 
     sequence_start, event_index, results
@@ -269,7 +288,6 @@ async def play_note_with_timing(
             "message": error_msg,
             "event_index": event_index
         })
-
 
 # --- Main Execution ---
 if __name__ == "__main__":
