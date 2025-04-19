@@ -2,6 +2,15 @@
 
 A FastMCP Server which allows an LLM to send MIDI sequences into any software that supports MIDI input.
 
+Cloned from [https://github.com/sandst1/mcp-server-midi](https://github.com/sandst1/mcp-server-midi)
+
+## Why the fork?
+
+- I preffer to use uv for virtual environments, and I don't want to install the dependencies globally.
+- Had some issues with the original repo when retrieving ports.
+- I need Program Change and Control Change messages.
+- I need some specific features for my vintage synths: Oberheim Matrix 1000 has an specific way to send the program change messages.
+
 ## Features
 
 - Creates a virtual MIDI output port
@@ -21,30 +30,42 @@ A FastMCP Server which allows an LLM to send MIDI sequences into any software th
 ## Installation
 
 1. Clone the repository:
-   ```
+
+   ```bash
    git clone <repository-url>
    cd mcp-server-midi
    ```
 
-2. Create a virtual env, activate it and install dependencies:
-   ```
-   python -m venv .venv
-   source .venv/bin/activate
+2. Create a virtual env with uv, and install the dependencies:
 
-   pip install -r requirements.txt
+   ```bash
+   uv venv .venv
+   .venv\Scripts\activate
+   uv pip install -r requirements.txt
    ```
 
 3. Create a `.env` file with your configuration:
+
+   ```bash
+   cp .env.example .env
+   
+4. Edit the `.env` file to set your desired configuration. For example:
+
    ```
    PORT=8123
+   MIDI_PORT_NAME="loopMIDI"
    ```
+
+5. Install the required MIDI driver for your OS if you haven't so (e.g., loopMIDI for Windows, IAC Driver for macOS).
+
+I highly recommend using [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html) for Windows, as it is a lightweight and easy-to-use virtual MIDI port driver.
 
 ## Usage
 
 Run the server:
 
-```
-python mcp_midi_server.py
+```bash
+uv run mcp_midi_server.py
 ```
 
 The server creates a virtual MIDI port named "MCP MIDI Out" that can be used as a MIDI input device in other applications. This means you can:
@@ -57,12 +78,18 @@ Simply select "MCP MIDI Out" as a MIDI input device in your preferred MIDI-compa
 
 ## MCP Config
 
-The server uses Server-Sent Events (SSE), this is how to config it in Cursor:
-```
+The server uses Server-Sent Events (SSE):
+
+Create a .vscode/mcp.json file in your project directory with the following content:
+
+This is a "per workspace" aproach, you can consolidate it globally later.
+
+```json
 {
-  "mcpServers": {
+   "servers": {
       "midi": {
-          "url": "http://localhost:8123/sse"
+         "type": "sse",
+         "url": "http://localhost:8123/sse"
       }
    }
 }
@@ -75,6 +102,7 @@ The server uses Server-Sent Events (SSE), this is how to config it in Cursor:
 Sends a MIDI Note On message.
 
 Parameters:
+
 - `note`: MIDI note number (0-127)
 - `velocity`: Note velocity (0-127, default 127)
 - `channel`: MIDI channel (0-15, default 0)
@@ -84,6 +112,7 @@ Parameters:
 Sends a MIDI Note Off message.
 
 Parameters:
+
 - `note`: MIDI note number (0-127)
 - `velocity`: Note off velocity (0-127, default 64)
 - `channel`: MIDI channel (0-15, default 0)
@@ -93,6 +122,7 @@ Parameters:
 Sends a MIDI Control Change (CC) message.
 
 Parameters:
+
 - `controller`: CC controller number (0-127)
 - `value`: CC value (0-127)
 - `channel`: MIDI channel (0-15, default 0)
@@ -102,12 +132,13 @@ Parameters:
 Sends a sequence of MIDI Note On/Off messages with specified durations.
 
 Parameters:
+
 - `events`: A list of event dictionaries. Each dictionary must contain:
-  - `note`: MIDI note number (0-127)
-  - `velocity`: Note velocity (0-127, default 127)
-  - `channel`: MIDI channel (0-15, default 0)
-  - `duration`: Time in seconds to hold the note before sending Note Off
-  - `start_time`: Time in seconds when to start the note, relative to sequence start (default 0)
+- `note`: MIDI note number (0-127)
+- `velocity`: Note velocity (0-127, default 127)
+- `channel`: MIDI channel (0-15, default 0)
+- `duration`: Time in seconds to hold the note before sending Note Off
+- `start_time`: Time in seconds when to start the note, relative to sequence start (default 0)
 
 ## Example
 

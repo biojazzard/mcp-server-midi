@@ -9,16 +9,38 @@ load_dotenv()
 # --- MIDI Setup ---
 midiout = rtmidi.MidiOut()
 available_ports = midiout.get_ports()
+target_port_name = os.getenv("MIDI_PORT_NAME", "loopMIDI Port") # Default or from .env
 
-# Create a virtual MIDI port
-port_name = "MCP MIDI Out"
-try:
-    midiout.open_virtual_port(port_name)
-    print(f"Opened virtual MIDI port: {port_name}")
-except rtmidi.RtMidiError as e:
-    print(f"Error opening virtual MIDI port: {e}")
-    # Handle error appropriately, maybe exit or fallback
+port_index = -1
+if available_ports:
+    print("Available MIDI output ports:")
+    for i, port in enumerate(available_ports):
+        print(f"{i}: {port}")
+        # Try to find the port by the name specified in .env or the default
+        if target_port_name in port:
+            port_index = i
+            break # Use the first match
+
+    if port_index != -1:
+        try:
+            midiout.open_port(port_index)
+            print(f"Opened MIDI port: {available_ports[port_index]}")
+        except rtmidi.RtMidiError as e:
+            print(f"Error opening MIDI port {port_index} ('{available_ports[port_index]}'): {e}")
+            print("Please ensure the MIDI port is available and not in use.")
+            print(f"Make sure a virtual MIDI driver like loopMIDI is running and provides a port named '{target_port_name}'.")
+            exit()
+    else:
+        print(f"Error: Could not find MIDI port containing the name '{target_port_name}'.")
+        print("Please ensure a virtual MIDI driver like loopMIDI is running or specify the correct port name in the .env file using MIDI_PORT_NAME.")
+        if not available_ports:
+            print("No MIDI output ports found at all.")
+        exit()
+else:
+    print("Error: No MIDI output ports found.")
+    print("Please ensure a MIDI interface or virtual MIDI driver (like loopMIDI) is installed and running.")
     exit()
+
 
 # --- MCP Server Setup ---
 mcp = FastMCP(
