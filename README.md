@@ -97,48 +97,67 @@ This is a "per workspace" aproach, you can consolidate it globally later.
 
 ## API Methods
 
-### Send Note On
+### `MIDI_note_on`
 
 Sends a MIDI Note On message.
 
 Parameters:
 
-- `note`: MIDI note number (0-127)
-- `velocity`: Note velocity (0-127, default 127)
-- `channel`: MIDI channel (0-15, default 0)
+- `note`: MIDI note number (0-127).
+- `velocity`: Note velocity (0-127, default 127).
+- `channel`: MIDI channel (0-15, default 0).
 
-### Send Note Off
+### `MIDI_note_off`
 
 Sends a MIDI Note Off message.
 
 Parameters:
 
-- `note`: MIDI note number (0-127)
-- `velocity`: Note off velocity (0-127, default 64)
-- `channel`: MIDI channel (0-15, default 0)
+- `note`: MIDI note number (0-127).
+- `velocity`: Note off velocity (0-127, default 64).
+- `channel`: MIDI channel (0-15, default 0).
 
-### Send Control Change
+### `MIDI_control_change`
 
 Sends a MIDI Control Change (CC) message.
 
 Parameters:
 
-- `controller`: CC controller number (0-127)
-- `value`: CC value (0-127)
-- `channel`: MIDI channel (0-15, default 0)
+- `controller`: CC controller number (0-127).
+- `value`: CC value (0-127).
+- `channel`: MIDI channel (0-15, default 0).
 
-### Send MIDI Sequence
+### `MIDI_program_change`
+
+Sends a MIDI Program Change message.
+
+Parameters:
+
+- `program`: Program number (0-127).
+- `channel`: MIDI channel (0-15, default 0).
+
+### `MIDI_bank_select`
+
+Sends MIDI Bank Select messages (CC 0 and CC 32). These messages are typically sent before a Program Change to select the desired sound bank.
+
+Parameters:
+
+- `bank_msb`: Bank Select MSB value (0-127). Controller 0.
+- `bank_lsb`: Bank Select LSB value (0-127). Controller 32.
+- `channel`: MIDI channel (0-15, default 0).
+
+### `MIDI_sequence`
 
 Sends a sequence of MIDI Note On/Off messages with specified durations.
 
 Parameters:
 
 - `events`: A list of event dictionaries. Each dictionary must contain:
-- `note`: MIDI note number (0-127)
-- `velocity`: Note velocity (0-127, default 127)
-- `channel`: MIDI channel (0-15, default 0)
-- `duration`: Time in seconds to hold the note before sending Note Off
-- `start_time`: Time in seconds when to start the note, relative to sequence start (default 0)
+    - `note`: MIDI note number (0-127).
+    - `velocity`: Note velocity (0-127, default 127).
+    - `channel`: MIDI channel (0-15, default 0).
+    - `duration`: Time in seconds to hold the note before sending Note Off (float).
+    - `start_time`: Time in seconds when to start the note, relative to sequence start (default 0).
 
 ## Example
 

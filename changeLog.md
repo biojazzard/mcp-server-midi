@@ -25,3 +25,4 @@
 
 - **MCP Tool Naming:** Renamed all MCP tools in `mcp_midi_server.py` to use the `MIDI_` prefix instead of `send_` (e.g., `send_note_on` -> `MIDI_note_on`).
 - **Modularization:** Refactored `mcp_midi_server.py` to import and use `play_note_with_timing` from the new `mcp_midi_tools.py` module.
+- **Documentation:** Updated the `## API Methods` section in `README.md` to accurately reflect the current MCP tools available in `mcp_midi_server.py`, including correcting names and adding missing tools (`MIDI_program_change`, `MIDI_bank_select`).
